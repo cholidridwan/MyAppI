@@ -39,15 +39,7 @@ public class MainActivity extends AppCompatActivity {
         btnTag.setId(1);
         canvas.addView(btnTag);
 
-        canvas.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                SGD.onTouchEvent(event);
-                return true;
-            }
-        });
-
-        tes();
+        tapHandler();
     }
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
@@ -65,7 +57,47 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void tes() {
+    private void tapHandler() {
+        canvas.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                SGD.onTouchEvent(event);
+                Log.i("action name", String.valueOf(event));
+
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_UP:
+                        click++;
+                        Handler handler = new Handler();
+                        Runnable r = new Runnable() {
+
+                            @Override
+                            public void run() {
+                                click = 0;
+                            }
+                        };
+
+                        if (click == 1) {
+                            //Single click
+                            handler.postDelayed(r, 250);
+                        } else if (click == 2) {
+                            //Double click
+                            click = 0;
+                            if(!active){
+                                btnTag.setBackgroundColor(Color.GRAY);
+                                active = true;
+                            }else {
+                                btnTag.setBackgroundResource(android.R.drawable.btn_default);
+                                active = false;
+                            }
+                        }
+                    break;
+                }
+
+                return true;
+            }
+        });
+
+
         btnTag.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
